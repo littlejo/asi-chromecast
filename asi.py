@@ -21,14 +21,20 @@ def cast_video(ip, video):
     cast = CattDevice(ip_addr=ip)
     cast.play_url(video, resolve=True, block=True)
 
-def print_video_asi(feed):
-    links_list = []
-    for i, post in enumerate(feed.entries):
+def retrieve_data(feed):
+    data_list = []
+    for post in feed.entries:
       date = "(%d/%02d/%02d)" % (post.published_parsed.tm_year,\
         post.published_parsed.tm_mon, \
         post.published_parsed.tm_mday)
-      links_list.append(post.link)
-      print(f"{i} {date}: {post.title}")
+      data_list.append((date, post.title, post.link))
+    return data_list
+
+def print_video_asi(data_list):
+    links_list = []
+    for i, (date, title, url) in enumerate(data_list):
+      links_list.append(url)
+      print(f"{i} {date}: {title}")
     return links_list
 
 def get_download_url(url):
@@ -43,8 +49,10 @@ def check_availability_video(url_list):
         sys.exit(1)
 
 
+#Main
 feed = feedparser.parse(url)
-links_list = print_video_asi(feed)
+data_list = retrieve_data(feed)
+links_list = print_video_asi(data_list)
 number = int(input("Choice: "))
 url = links_list[number]
 url_list = get_download_url(url)
