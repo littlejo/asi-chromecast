@@ -30,22 +30,22 @@ def print_video_asi(feed):
       print(f"{i} {date}: {post.title}")
     return links_list
 
+def get_download_url(url):
+    r = requests.get(url)
+    parser = MyHTMLParser()
+    parser.feed(r.text)
+    return parser.url_list
+
 
 feed = feedparser.parse(url)
 links_list = print_video_asi(feed)
-
 number = int(input("Choice: "))
-
 url = links_list[number]
+url_list = get_download_url(url)
 
-r = requests.get(url)
-
-parser = MyHTMLParser()
-parser.feed(r.text)
-
-if len(parser.url_list) > 0:
+if len(url_list) > 0:
     ip = find_ip()
-    cast_video(ip, parser.url_list[0])
+    cast_video(ip, url_list[0])
 else:
     print("video unavailable")
 
