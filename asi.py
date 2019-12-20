@@ -1,6 +1,7 @@
 import feedparser
 from html.parser import HTMLParser
 import requests
+import sys
 from catt.api import CattDevice
 
 url= "https://api.arretsurimages.net/api/public/rss/emission/arret-sur-images"
@@ -36,16 +37,17 @@ def get_download_url(url):
     parser.feed(r.text)
     return parser.url_list
 
+def check_availability_video(url_list):
+    if len(url_list) == 0:
+        print("video unavailable")
+        sys.exit(1)
+
 
 feed = feedparser.parse(url)
 links_list = print_video_asi(feed)
 number = int(input("Choice: "))
 url = links_list[number]
 url_list = get_download_url(url)
-
-if len(url_list) > 0:
-    ip = find_ip()
-    cast_video(ip, url_list[0])
-else:
-    print("video unavailable")
-
+check_availability_video(url_list)
+ip = find_ip()
+cast_video(ip, url_list[0])
